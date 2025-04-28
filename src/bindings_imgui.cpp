@@ -69,7 +69,15 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         .value("UP", ImGuiDir_Up)
         .value("DOWN", ImGuiDir_Down);
 
-    py::enum_<ImGuiWindowFlags_>(m, "WindowFlags")
+	py::enum_<ImGuiSelectableFlags_>(m, "SelectableFlags")
+		.value("NONE", ImGuiSelectableFlags_None)
+		.value("DONT_CLOSE_POPUPS", ImGuiSelectableFlags_DontClosePopups)
+		.value("SPAN_ALL_COLUMNS", ImGuiSelectableFlags_SpanAllColumns)
+		.value("ALLOW_DOUBLE_CLICK", ImGuiSelectableFlags_AllowDoubleClick)
+		.value("DISABLED", ImGuiSelectableFlags_Disabled)
+		.value("ALLOW_OVERLAP", ImGuiSelectableFlags_AllowOverlap);
+
+	py::enum_<ImGuiWindowFlags_>(m, "WindowFlags")
         .value("NONE", ImGuiWindowFlags_None)
         .value("NO_TITLE_BAR", ImGuiWindowFlags_NoTitleBar)
         .value("NO_RESIZE", ImGuiWindowFlags_NoResize)
@@ -330,15 +338,8 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     m.def("begin_window", [&](std::string label,
                        bool opened,
                        array_like<float> position, 
-                       array_like<float> size, 
-                       bool title_bar,
-                       bool resize,
-                       bool move,
-                       bool scrollbar,
-                       bool scrollWithMouse,
-                       bool collapse,
-                       bool autoResize,
-                       bool menuBar) {
+                       array_like<float> size,
+					   ImGuiWindowFlags flags) {
 
         if (position.shape()[0] > 0) { 
             assert_shape(position, {{2}});
@@ -353,17 +354,6 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
             ImGui::SetNextWindowSize(ImVec2(320, 240), ImGuiCond_Once);
         }
 
-        ImGuiWindowFlags flags = ImGuiWindowFlags_None;
-
-        flags |= ImGuiWindowFlags_NoTitleBar * !title_bar;
-        flags |= ImGuiWindowFlags_NoResize * !resize;
-        flags |= ImGuiWindowFlags_NoMove * !move;
-        flags |= ImGuiWindowFlags_NoScrollbar * !scrollbar;
-        flags |= ImGuiWindowFlags_NoScrollWithMouse * !scrollWithMouse;
-        flags |= ImGuiWindowFlags_NoCollapse * !collapse;
-        flags |= ImGuiWindowFlags_AlwaysAutoResize * autoResize;
-        flags |= ImGuiWindowFlags_MenuBar * menuBar;
-
         viz.currentWindowOpen = opened;
 
         bool show = ImGui::Begin(label.c_str(), &viz.currentWindowOpen, flags);
@@ -374,14 +364,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("opened") = true,
     py::arg("position") = py::array(),
     py::arg("size") = py::array(),
-    py::arg("title_bar") = true,
-    py::arg("resize") = true,
-    py::arg("move") = true,
-    py::arg("scrollbar") = true,
-    py::arg("scroll_with_mouse") = true,
-    py::arg("collapse") = true,
-    py::arg("auto_resize") = false,
-    py::arg("menu_bar") = false);
+    py::arg("flags") = ImGuiWindowFlags_None);
 
     m.def("end_window", ImGui::End);
 
@@ -771,9 +754,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     m.def("begin_tooltip", ImGui::BeginTooltip);
     m.def("end_tooltip", ImGui::EndTooltip);
 
-    m.def("selectable", [&](std::string label, bool selected, ImVec2 size) { 
+    m.def("selectable", [&](std::string label, bool selected, ImVec2 size, ImGuiSelectableFlags flags) { 
 
-        bool s = ImGui::Selectable(label.c_str(), selected, 0, size);
+        bool s = ImGui::Selectable(label.c_str(), selected, flags, size);
 
         if (selected != s) {
             viz.setMod(true);
@@ -783,7 +766,8 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     },
     py::arg("label"),
     py::arg("selected"),
-    py::arg("size") = ImVec2(0, 0));
+    py::arg("size") = ImVec2(0, 0),
+	py::arg("flags") = ImGuiSelectableFlags_None);
 
     /**
      * Tables & Columns
