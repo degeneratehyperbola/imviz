@@ -522,19 +522,24 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("selection_index") = 0);
 
     m.def("text", [&](py::handle obj, py::handle color) {
-
-        ImVec4 c = interpretColor(color);
-
+		
+		ImVec4 c = interpretColor(color);
+		
         std::string str = py::str(obj);
-
+		
         if (c.w >= 0) {
-            ImGui::TextColored(c, "%s", str.c_str());
+			ImGui::TextColored(c, "%s", str.c_str());
         } else {
-            ImGui::Text("%s", str.c_str());
+			ImGui::Text("%s", str.c_str());
         }
     },
     py::arg("str"),
     py::arg("color") = py::array());
+	m.def("text_wrapped", [&](py::handle obj) {
+        std::string str = py::str(obj);
+		ImGui::TextWrapped("%s", str.c_str());
+    },
+    py::arg("str"));
 
     m.def("input", [&](std::string label, std::string& obj, ImGuiInputTextFlags flags) {
         bool mod = ImGui::InputText(label.c_str(), &obj, flags);
@@ -542,7 +547,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         return obj;
     }, 
     py::arg("label"),
-    py::arg("obj"),
+    py::arg("value"),
     py::arg("flags") = ImGuiInputTextFlags_None);
     m.def("input", [&](std::string label, int64_t& obj, int64_t step, int64_t step_fast, std::string format, ImGuiInputTextFlags flags) {
         bool mod = ImGui::InputScalar(
@@ -551,7 +556,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         return obj;
     },
     py::arg("label"),
-    py::arg("obj"),
+    py::arg("value"),
     py::arg("step") = 1,
     py::arg("step_fast") = 100,
     py::arg("format") = "%i",
@@ -563,7 +568,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         return obj;
     },
     py::arg("label"),
-    py::arg("obj"),
+    py::arg("value"),
     py::arg("step") = 1.0,
     py::arg("step_fast") = 100.0,
     py::arg("format") = "%.1f",
@@ -576,7 +581,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 		return obj;
 	},
 	py::arg("label"),
-	py::arg("obj"),
+	py::arg("value"),
 	py::arg("step") = 1,
 	py::arg("step_fast") = 100,
 	py::arg("format") = "%i",
@@ -588,7 +593,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 		return obj;
 	},
 	py::arg("label"),
-	py::arg("obj"),
+	py::arg("value"),
 	py::arg("step") = 1.0,
 	py::arg("step_fast") = 100.0,
 	py::arg("format") = "%.1f",
@@ -620,7 +625,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         return obj;
     }, 
     py::arg("label"),
-    py::arg("obj"));
+    py::arg("value"));
 
 	m.def("slider", [&](std::string label, int64_t& value, int64_t min, int64_t max, std::string format, ImGuiSliderFlags flags) {
         bool mod = ImGui::SliderScalar(
@@ -840,6 +845,10 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 
     m.def("begin_tooltip", ImGui::BeginTooltip);
     m.def("end_tooltip", ImGui::EndTooltip);
+    m.def("set_item_tooltip", [](std::string tooltip) {
+		ImGui::SetItemTooltip("%s", tooltip.c_str());
+	},
+	py::arg("tooltip"));
 
     m.def("selectable", [&](std::string label, bool selected, ImVec2 size, ImGuiSelectableFlags flags) { 
 
