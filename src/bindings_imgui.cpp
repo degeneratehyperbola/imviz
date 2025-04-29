@@ -647,6 +647,32 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("format") = "%.1f",
     py::arg("flags") = ImGuiSliderFlags_None);
 
+	m.def("slider_int_nd", [&](std::string label, array_like<int64_t>& values, int64_t min, int64_t max, std::string format, ImGuiSliderFlags flags) {
+		bool mod = ImGui::SliderScalarN(
+			label.c_str(), ImGuiDataType_S64, values.mutable_data(), static_cast<int>(values.size()), &min, &max, format.c_str(), flags);
+		viz.setMod(mod);
+		return values;
+	},
+	py::arg("label"),
+	py::arg("values"),
+	py::arg("min") = 0,
+	py::arg("max") = 100,
+	py::arg("format") = "%i",
+	py::arg("flags") = ImGuiSliderFlags_None);
+	m.def("slider_float_nd", [&](std::string label, array_like<double>& values, double min, double max, std::string format, ImGuiSliderFlags flags) {
+		bool mod = ImGui::SliderScalarN(
+			label.c_str(), ImGuiDataType_Double, values.mutable_data(), static_cast<int>(values.size()), &min, &max, format.c_str(), flags);
+		viz.setMod(mod);
+		return values;
+	},
+	py::arg("label"),
+	py::arg("values"),
+	py::arg("min") = 0.0,
+	py::arg("max") = 1.0,
+	py::arg("format") = "%.1f",
+	py::arg("flags") = ImGuiSliderFlags_None);
+	
+
     m.def("drag", [&](std::string label, int64_t& value, float speed, int64_t min, int64_t max, std::string format, ImGuiSliderFlags flags) {
 
         bool mod = ImGui::DragScalar(
