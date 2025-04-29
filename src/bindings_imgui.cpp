@@ -69,7 +69,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         .value("UP", ImGuiDir_Up)
         .value("DOWN", ImGuiDir_Down);
 
-	py::enum_<ImGuiSelectableFlags_>(m, "SelectableFlags")
+	py::enum_<ImGuiSelectableFlags_>(m, "SelectableFlags", py::arithmetic())
 		.value("NONE", ImGuiSelectableFlags_None)
 		.value("DONT_CLOSE_POPUPS", ImGuiSelectableFlags_DontClosePopups)
 		.value("SPAN_ALL_COLUMNS", ImGuiSelectableFlags_SpanAllColumns)
@@ -77,7 +77,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 		.value("DISABLED", ImGuiSelectableFlags_Disabled)
 		.value("ALLOW_OVERLAP", ImGuiSelectableFlags_AllowOverlap);
 
-	py::enum_<ImGuiWindowFlags_>(m, "WindowFlags")
+	py::enum_<ImGuiWindowFlags_>(m, "WindowFlags", py::arithmetic())
         .value("NONE", ImGuiWindowFlags_None)
         .value("NO_TITLE_BAR", ImGuiWindowFlags_NoTitleBar)
         .value("NO_RESIZE", ImGuiWindowFlags_NoResize)
@@ -235,7 +235,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         .value("ROW_BG_1", ImGuiTableBgTarget_RowBg1)
         .value("CELL_BG", ImGuiTableBgTarget_CellBg);
 
-    py::enum_<ImGuiDockNodeFlags_>(m, "DockNodeFlags")
+    py::enum_<ImGuiDockNodeFlags_>(m, "DockNodeFlags", py::arithmetic())
         .value("NONE", ImGuiDockNodeFlags_None)
         .value("KEEP_ALIVE_ONLY", ImGuiDockNodeFlags_KeepAliveOnly)
         .value("NO_DOCKING_IN_CENTRAL_NODE", ImGuiDockNodeFlags_NoDockingInCentralNode)
@@ -338,23 +338,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     m.def("begin_window", [&](std::string label,
                        bool opened,
                        bool show_close_btn,
-                       array_like<float> position, 
-                       array_like<float> size,
 					   ImGuiWindowFlags flags) {
-
-        if (position.shape()[0] > 0) { 
-            assert_shape(position, {{2}});
-            const float* data = position.data();
-            ImGui::SetNextWindowPos({data[0], data[1]});
-        }
-        if (size.shape()[0] > 0) {
-            assert_shape(size, {{2}});
-            const float* data = size.data();
-            ImGui::SetNextWindowSize({data[0], data[1]});
-        } else {
-            ImGui::SetNextWindowSize(ImVec2(320, 240), ImGuiCond_Once);
-        }
-
         viz.currentWindowOpen = opened;
 		if (!opened) return opened;
 
@@ -369,8 +353,6 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("label"),
     py::arg("opened") = true,
     py::arg("show_close_btn") = false,
-    py::arg("position") = py::array(),
-    py::arg("size") = py::array(),
     py::arg("flags") = ImGuiWindowFlags_None);
 
     m.def("end_window", ImGui::End);
@@ -380,7 +362,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         return ImGui::BeginChild(label.c_str(), size, border, flags);
     },
     py::arg("label"),
-    py::arg("size") = ImVec2(0.0f, 0.0f),
+    py::arg("size") = ImVec2(0, 0),
     py::arg("border") = false,
     py::arg("flags") = ImGuiWindowFlags_None);
 
@@ -460,11 +442,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 
     m.def("tree_pop", ImGui::TreePop);
 
-    m.def("button", [&](std::string label) {
-
-        return ImGui::Button(label.c_str());
-    },
-    py::arg("label"));
+	m.def("button", ImGui::Button,
+    py::arg("label"),
+    py::arg("size") = ImVec2(0, 0));
 
     m.def("combo", [&](std::string label, py::list items, int selectionIndex) {
 
