@@ -77,6 +77,58 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 		.value("DISABLED", ImGuiSelectableFlags_Disabled)
 		.value("ALLOW_OVERLAP", ImGuiSelectableFlags_AllowOverlap);
 
+	py::enum_<ImGuiSliderFlags_>(m, "SliderFlags", py::arithmetic())
+		.value("NONE", ImGuiSliderFlags_None)
+		.value("ALWAYS_CLAMP", ImGuiSliderFlags_AlwaysClamp)
+		.value("LOGARITHMIC", ImGuiSliderFlags_Logarithmic)
+		.value("NO_ROUND_TO_FORMAT", ImGuiSliderFlags_NoRoundToFormat)
+		.value("NO_INPUT", ImGuiSliderFlags_NoInput);
+	
+	py::enum_<ImGuiInputTextFlags_>(m, "InputTextFlags", py::arithmetic())
+		.value("None", ImGuiInputTextFlags_None)
+		.value("CHARS_DECIMAL", ImGuiInputTextFlags_CharsDecimal)
+		.value("CHARS_HEXADECIMAL", ImGuiInputTextFlags_CharsHexadecimal)
+		.value("CHARS_UPPERCASE", ImGuiInputTextFlags_CharsUppercase)
+		.value("CHARS_NO_BLANK", ImGuiInputTextFlags_CharsNoBlank)
+		.value("AUTO_SELECT_ALL", ImGuiInputTextFlags_AutoSelectAll)
+		.value("ENTER_RETURNS_TRUE", ImGuiInputTextFlags_EnterReturnsTrue)
+		.value("CALLBACK_COMPLETION", ImGuiInputTextFlags_CallbackCompletion)
+		.value("CALLBACK_HISTORY", ImGuiInputTextFlags_CallbackHistory)
+		.value("CALLBACK_ALWAYS", ImGuiInputTextFlags_CallbackAlways)
+		.value("CALLBACK_CHAR_FILTER", ImGuiInputTextFlags_CallbackCharFilter)
+		.value("ALLOW_TAB_INPUT", ImGuiInputTextFlags_AllowTabInput)
+		.value("CTRL_ENTER_FOR_NEW_LINE", ImGuiInputTextFlags_CtrlEnterForNewLine)
+		.value("NO_HORIZONTAL_SCROLL", ImGuiInputTextFlags_NoHorizontalScroll)
+		.value("ALWAYS_OVERWRITE", ImGuiInputTextFlags_AlwaysOverwrite)
+		.value("READ_ONLY", ImGuiInputTextFlags_ReadOnly)
+		.value("PASSWORD", ImGuiInputTextFlags_Password)
+		.value("NO_UNDO_REDO", ImGuiInputTextFlags_NoUndoRedo)
+		.value("CHARS_SCIENTIFIC", ImGuiInputTextFlags_CharsScientific)
+		.value("CALLBACK_RESIZE", ImGuiInputTextFlags_CallbackResize)
+		.value("CALLBACK_EDIT", ImGuiInputTextFlags_CallbackEdit)
+		.value("ESCAPE_CLEARS_ALL", ImGuiInputTextFlags_EscapeClearsAll);
+	
+	py::enum_<ImGuiInputFlags_>(m, "InputFlags", py::arithmetic())
+		.value("NONE", ImGuiInputFlags_None)
+		.value("REPEAT", ImGuiInputFlags_Repeat)
+		.value("REPEAT_RATE_DEFAULT", ImGuiInputFlags_RepeatRateDefault)
+		.value("REPEAT_RATE_NAV_MOVE", ImGuiInputFlags_RepeatRateNavMove)
+		.value("REPEAT_RATE_NAV_TWEAK", ImGuiInputFlags_RepeatRateNavTweak)
+		.value("REPEAT_UNTIL_RELEASE", ImGuiInputFlags_RepeatUntilRelease)
+		.value("REPEAT_UNTIL_KEY_MODS_CHANGE", ImGuiInputFlags_RepeatUntilKeyModsChange)
+		.value("REPEAT_UNTIL_KEY_MODS_CHANGE_FROM_NONE", ImGuiInputFlags_RepeatUntilKeyModsChangeFromNone)
+		.value("REPEAT_UNTIL_OTHER_KEY_PRESS", ImGuiInputFlags_RepeatUntilOtherKeyPress)
+		.value("COND_HOVERED", ImGuiInputFlags_CondHovered)
+		.value("COND_ACTIVE", ImGuiInputFlags_CondActive)
+		.value("LOCK_THIS_FRAME", ImGuiInputFlags_LockThisFrame)
+		.value("LOCK_UNTIL_RELEASE", ImGuiInputFlags_LockUntilRelease)
+		.value("ROUTE_FOCUSED", ImGuiInputFlags_RouteFocused)
+		.value("ROUTE_GLOBAL_LOW", ImGuiInputFlags_RouteGlobalLow)
+		.value("ROUTE_GLOBAL", ImGuiInputFlags_RouteGlobal)
+		.value("ROUTE_GLOBAL_HIGH", ImGuiInputFlags_RouteGlobalHigh)
+		.value("ROUTE_ALWAYS", ImGuiInputFlags_RouteAlways)
+		.value("ROUTE_UNLESS_BG_FOCUSED", ImGuiInputFlags_RouteUnlessBgFocused);
+
 	py::enum_<ImGuiWindowFlags_>(m, "WindowFlags", py::arithmetic())
         .value("NONE", ImGuiWindowFlags_None)
         .value("NO_TITLE_BAR", ImGuiWindowFlags_NoTitleBar)
@@ -484,35 +536,63 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("str"),
     py::arg("color") = py::array());
 
-    m.def("input", [&](std::string label, std::string& obj) {
-        
-        bool mod = ImGui::InputText(label.c_str(), &obj);
+    m.def("input", [&](std::string label, std::string& obj, ImGuiInputTextFlags flags) {
+        bool mod = ImGui::InputText(label.c_str(), &obj, flags);
         viz.setMod(mod);
-
         return obj;
     }, 
     py::arg("label"),
-    py::arg("obj"));
-
-    m.def("input", [&](std::string label, int& obj) {
-        
-        bool mod = ImGui::InputInt(label.c_str(), &obj);
+    py::arg("obj"),
+    py::arg("flags") = ImGuiInputTextFlags_None);
+    m.def("input", [&](std::string label, int64_t& obj, int64_t step, int64_t step_fast, std::string format, ImGuiInputTextFlags flags) {
+        bool mod = ImGui::InputScalar(
+			label.c_str(), ImGuiDataType_S64, &obj, &step, &step_fast, format.c_str(), flags);
         viz.setMod(mod);
-
         return obj;
-    }, 
+    },
     py::arg("label"),
-    py::arg("obj"));
-
-    m.def("input", [&](std::string label, double& obj) {
-        
-        bool mod = ImGui::InputDouble(label.c_str(), &obj);
+    py::arg("obj"),
+    py::arg("step") = 1,
+    py::arg("step_fast") = 100,
+    py::arg("format") = "%i",
+    py::arg("flags") = ImGuiInputTextFlags_None);
+    m.def("input", [&](std::string label, double& obj, double step, double step_fast, std::string format, ImGuiInputTextFlags flags) {
+        bool mod = ImGui::InputScalar(
+			label.c_str(), ImGuiDataType_Double, &obj, &step, &step_fast, format.c_str(), flags);
         viz.setMod(mod);
-
         return obj;
-    }, 
+    },
     py::arg("label"),
-    py::arg("obj"));
+    py::arg("obj"),
+    py::arg("step") = 1.0,
+    py::arg("step_fast") = 100.0,
+    py::arg("format") = "%.1f",
+    py::arg("flags") = ImGuiInputTextFlags_None);
+
+	m.def("input_int_nd", [&](std::string label, array_like<int64_t>& obj, int64_t step, int64_t step_fast, std::string format, ImGuiInputTextFlags flags) {
+		bool mod = ImGui::InputScalarN(
+			label.c_str(), ImGuiDataType_S64, obj.mutable_data(), static_cast<int>(obj.size()), &step, &step_fast, format.c_str(), flags);
+		viz.setMod(mod);
+		return obj;
+	},
+	py::arg("label"),
+	py::arg("obj"),
+	py::arg("step") = 1,
+	py::arg("step_fast") = 100,
+	py::arg("format") = "%i",
+	py::arg("flags") = ImGuiInputTextFlags_None);
+	m.def("input_float_nd", [&](std::string label, array_like<double>& obj, double step, double step_fast, std::string format, ImGuiInputTextFlags flags) {
+		bool mod = ImGui::InputScalarN(
+			label.c_str(), ImGuiDataType_Double, obj.mutable_data(), static_cast<int>(obj.size()), &step, &step_fast, format.c_str(), flags);
+		viz.setMod(mod);
+		return obj;
+	},
+	py::arg("label"),
+	py::arg("obj"),
+	py::arg("step") = 1.0,
+	py::arg("step_fast") = 100.0,
+	py::arg("format") = "%.1f",
+	py::arg("flags") = ImGuiInputTextFlags_None);
 
     m.def("get_input_cursor_index", [&](std::string label) {
 
@@ -542,35 +622,35 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("label"),
     py::arg("obj"));
 
-    m.def("slider", [&](std::string title, double& value, double min, double max) {
-        
+	m.def("slider", [&](std::string label, int64_t& value, int64_t min, int64_t max, std::string format, ImGuiSliderFlags flags) {
         bool mod = ImGui::SliderScalar(
-                title.c_str(), ImGuiDataType_Double, &value, &min, &max);
+                label.c_str(), ImGuiDataType_S64, &value, &min, &max, format.c_str(), flags);
         viz.setMod(mod);
-
-        return value;
-    }, 
-    py::arg("label"),
-    py::arg("value"),
-    py::arg("min") = 0.0,
-    py::arg("max") = 1.0);
-
-    m.def("slider_int", [&](const std::string title, int& value, const int min, const int max) {
-        
-        bool mod = ImGui::SliderInt(
-                title.c_str(), &value, min, max);
-        viz.setMod(mod);
-
         return value;
     }, 
     py::arg("label"),
     py::arg("value"),
     py::arg("min") = 0,
-    py::arg("max") = 1);
+    py::arg("max") = 100,
+    py::arg("format") = "%i",
+    py::arg("flags") = ImGuiSliderFlags_None);
+    m.def("slider", [&](std::string label, double& value, double min, double max, std::string format, ImGuiSliderFlags flags) {
+        bool mod = ImGui::SliderScalar(
+                label.c_str(), ImGuiDataType_Double, &value, &min, &max, format.c_str(), flags);
+        viz.setMod(mod);
+        return value;
+    }, 
+    py::arg("label"),
+    py::arg("value"),
+    py::arg("min") = 0.0,
+    py::arg("max") = 1.0,
+    py::arg("format") = "%.1f",
+    py::arg("flags") = ImGuiSliderFlags_None);
 
-    m.def("drag", [&](std::string title, int& value, float speed, int min, int max) {
+    m.def("drag", [&](std::string label, int64_t& value, float speed, int64_t min, int64_t max, std::string format, ImGuiSliderFlags flags) {
 
-        bool mod = ImGui::DragInt(title.c_str(), &value, speed, min, max);
+        bool mod = ImGui::DragScalar(
+			label.c_str(), ImGuiDataType_S64, &value, speed, &min, &max, format.c_str(), flags);
         viz.setMod(mod);
 
         return value;
@@ -579,12 +659,13 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("value"),
     py::arg("speed") = 1.0,
     py::arg("min") = 0,
-    py::arg("max") = 0);
-
-    m.def("drag", [&](std::string title, double& value, float speed, double min, double max) {
+    py::arg("max") = 0,
+    py::arg("format") = "%i",
+    py::arg("flags") = ImGuiSliderFlags_None);
+	m.def("drag", [&](std::string label, double& value, float speed, double min, double max, std::string format, ImGuiSliderFlags flags) {
         
-        bool mod = ImGui::DragScalar(title.c_str(),
-                ImGuiDataType_Double, &value, speed, &min, &max);
+        bool mod = ImGui::DragScalar(label.c_str(),
+                ImGuiDataType_Double, &value, speed, &min, &max, format.c_str(), flags);
         viz.setMod(mod);
 
         return value;
@@ -593,47 +674,39 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("value"),
     py::arg("speed") = 0.1,
     py::arg("min") = 0.0,
-    py::arg("max") = 0.0);
+    py::arg("max") = 0.0,
+    py::arg("format") = "%.1f",
+    py::arg("flags") = ImGuiSliderFlags_None);
 
-    m.def("range", [&](std::string label, py::tuple range, float speed, float min, float max) {
-
-        float minVal = py::cast<float>(range[0]);
-        float maxVal = py::cast<float>(range[1]);
-        
-        bool mod = ImGui::DragFloatRange2(label.c_str(), &minVal, &maxVal, speed, min, max);
-
-        if (ImGui::BeginPopupContextItem(label.c_str())) {
-
-            if (ImGui::MenuItem("Expand range")) {
-                minVal = min;
-                maxVal = max;
-            }
-            if (ImGui::MenuItem("Expand to min")) {
-                minVal = min;
-            }
-            if (ImGui::MenuItem("Expand to max")) {
-                maxVal = max;
-            }
-            if (ImGui::MenuItem("Collapse to min")) {
-                maxVal = minVal;
-            }
-            if (ImGui::MenuItem("Collapse to max")) {
-                minVal = maxVal;
-            }
-
-            ImGui::EndPopup();
-        }
-
-        viz.setMod(mod);
-
-        return py::make_tuple(minVal, maxVal);
-    }, 
-    py::arg("label"),
-    py::arg("range"),
-    py::arg("speed") = 1.0f,
-    py::arg("min") = 0,
-    py::arg("max") = 0);
-
+	m.def("drag_int_nd", [&](std::string title, array_like<int64_t>& values, float speed, int64_t min, int64_t max, std::string format, ImGuiSliderFlags flags) {
+		bool mod = ImGui::DragScalarN(
+			title.c_str(), ImGuiDataType_S64, values.mutable_data(), static_cast<int>(values.size()),
+			speed, &min, &max, format.c_str(), flags);
+		viz.setMod(mod);
+		return values;
+	},
+	py::arg("label"),
+	py::arg("values"),
+	py::arg("speed") = 1.0,
+	py::arg("min") = 0,
+	py::arg("max") = 0,
+	py::arg("format") = "%i",
+	py::arg("flags") = ImGuiSliderFlags_None);
+	m.def("drag_float_nd", [&](std::string title, array_like<double>& values, float speed, double min, double max, std::string format, ImGuiSliderFlags flags) {
+		bool mod = ImGui::DragScalarN(
+			title.c_str(), ImGuiDataType_Double, values.mutable_data(), static_cast<int>(values.size()),
+			speed, &min, &max, format.c_str(), flags);
+		viz.setMod(mod);
+		return values;
+	},
+	py::arg("label"),
+	py::arg("values"),
+	py::arg("speed") = 0.1,
+	py::arg("min") = 0.0,
+	py::arg("max") = 0.0,
+	py::arg("format") = "%.1f",
+	py::arg("flags") = ImGuiSliderFlags_None);
+	
     m.def("color_edit", [&](std::string label, array_like<float> color) {
 
         assert_shape(color, {{3}, {4}});
