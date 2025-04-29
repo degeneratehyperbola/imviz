@@ -757,6 +757,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("border_col") = py::array());
 
     m.def("separator", ImGui::Separator);
+    m.def("separator_text", ImGui::SeparatorText, py::arg("text"));
 
     m.def("begin_tooltip", ImGui::BeginTooltip);
     m.def("end_tooltip", ImGui::EndTooltip);
