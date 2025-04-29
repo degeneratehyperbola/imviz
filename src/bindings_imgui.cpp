@@ -995,16 +995,45 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
      * Imgui window helper functions
      */
 
-    m.def("set_next_window_pos",
-            ImGui::SetNextWindowPos,
+    m.def("set_next_window_pos", ImGui::SetNextWindowPos,
     py::arg("position"),
     py::arg("cond") = ImGuiCond_None,
     py::arg("pivot") = py::array());
+	m.def("set_window_pos", [](ImVec2 pos, ImGuiCond cond) {
+		ImGui::SetWindowPos(pos, cond);
+	},
+	py::arg("position"),
+	py::arg("cond") = ImGuiCond_None);
+	m.def("set_window_pos", [](std::string label, ImVec2 pos, ImGuiCond cond) {
+		ImGui::SetWindowPos(label.c_str(), pos, cond);
+	},
+	py::arg("label"),
+	py::arg("position"),
+	py::arg("cond") = ImGuiCond_None);
 
-    m.def("set_next_window_size", 
-            ImGui::SetNextWindowSize,
+    m.def("set_next_window_size", ImGui::SetNextWindowSize,
     py::arg("size"),
     py::arg("cond") = ImGuiCond_None);
+	m.def("set_window_size", [](ImVec2 size, ImGuiCond cond) {
+		ImGui::SetWindowSize(size, cond);
+	},
+	py::arg("size"),
+	py::arg("cond") = ImGuiCond_None);
+	m.def("set_window_size", [](std::string label, ImVec2 size, ImGuiCond cond) {
+		ImGui::SetWindowSize(label.c_str(), size, cond);
+	},
+	py::arg("label"),
+	py::arg("size"),
+	py::arg("cond") = ImGuiCond_None);
+
+	m.def("set_next_window_focus", ImGui::SetNextWindowFocus);
+	m.def("set_window_focus", []() {
+		ImGui::SetWindowFocus();
+	});
+	m.def("set_window_focus", [](std::string label) {
+		ImGui::SetWindowFocus(label.c_str());
+	},
+	py::arg("label"));
 
     m.def("set_next_window_size_contraints", [](ImVec2 minSize, ImVec2 maxSize) {
         ImGui::SetNextWindowSizeConstraints(minSize, maxSize);
