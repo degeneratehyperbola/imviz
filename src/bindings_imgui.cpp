@@ -337,6 +337,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 
     m.def("begin_window", [&](std::string label,
                        bool opened,
+                       bool show_close_btn,
                        array_like<float> position, 
                        array_like<float> size,
 					   ImGuiWindowFlags flags) {
@@ -355,13 +356,19 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         }
 
         viz.currentWindowOpen = opened;
+		if (!opened) return opened;
 
-        bool show = ImGui::Begin(label.c_str(), &viz.currentWindowOpen, flags);
+		bool show;
+		if (show_close_btn)
+			show = ImGui::Begin(label.c_str(), &viz.currentWindowOpen, flags);
+		else
+			show = ImGui::Begin(label.c_str(), nullptr, flags);
 
         return show;
     },
     py::arg("label"),
     py::arg("opened") = true,
+    py::arg("show_close_btn") = false,
     py::arg("position") = py::array(),
     py::arg("size") = py::array(),
     py::arg("flags") = ImGuiWindowFlags_None);
