@@ -6,10 +6,12 @@
 #include <cmath>
 #include <sstream>
 #include <iomanip>
+#include <functional>
 
 #include <pybind11/pytypes.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/functional.h>
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -541,14 +543,21 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     },
     py::arg("str"));
 
-    m.def("input", [&](std::string label, std::string& obj, ImGuiInputTextFlags flags) {
-        bool mod = ImGui::InputText(label.c_str(), &obj, flags);
-        viz.setMod(mod);
-        return obj;
-    }, 
-    py::arg("label"),
-    py::arg("value"),
-    py::arg("flags") = ImGuiInputTextFlags_None);
+    m.def("input", [&](std::string label, std::string& obj, std::function<void (std::string)>* callback, ImGuiInputTextFlags flags = 0) {
+		bool mod = ImGui::InputText(label.c_str(), &obj, flags, [](ImGuiInputTextCallbackData* data) {
+			auto callback = static_cast<std::function<void (std::string)>*>(data->UserData);
+			if (callback) {
+				(*callback)(data->Buf);
+			}
+			return 0;
+		}, callback);
+		viz.setMod(mod);
+		return obj;
+	}, 
+	py::arg("label"),
+	py::arg("value"),
+	py::arg("callback") = nullptr,
+	py::arg("flags") = 0);
     m.def("input", [&](std::string label, int64_t& obj, int64_t step, int64_t step_fast, std::string format, ImGuiInputTextFlags flags) {
         bool mod = ImGui::InputScalar(
 			label.c_str(), ImGuiDataType_S64, &obj, &step, &step_fast, format.c_str(), flags);
@@ -1928,8 +1937,8 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 
             unsigned int startIndex = dl._VtxCurrentIdx;
 
-            double x = trafoStack.back().m20;
-            double y = trafoStack.back().m21;
+            //double x = trafoStack.back().m20;
+            //double y = trafoStack.back().m21;
 
             dl.AddText(position,
                        ImGui::GetColorU32(interpretColor(color)),
