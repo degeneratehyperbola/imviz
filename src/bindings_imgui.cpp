@@ -6,6 +6,7 @@
 #include <cmath>
 #include <sstream>
 #include <iomanip>
+#include <string>
 #include <functional>
 
 #include <pybind11/pytypes.h>
@@ -543,21 +544,50 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     },
     py::arg("str"));
 
-    m.def("input", [&](std::string label, std::string& obj, std::function<void (std::string)>* callback, ImGuiInputTextFlags flags = 0) {
-		bool mod = ImGui::InputText(label.c_str(), &obj, flags, [](ImGuiInputTextCallbackData* data) {
-			auto callback = static_cast<std::function<void (std::string)>*>(data->UserData);
-			if (callback) {
-				(*callback)(data->Buf);
-			}
-			return 0;
-		}, callback);
+    m.def("input", [&](std::string label, std::string& obj, std::string hint, ImGuiInputTextFlags flags, std::function<void (std::string)>* callback) {
+		bool mod;
+		if (hint.empty()) {
+			mod = ImGui::InputText(label.c_str(), &obj, flags, [](ImGuiInputTextCallbackData* data) {
+				auto callback = static_cast<std::function<void (std::string)>*>(data->UserData);
+				if (callback) {
+					(*callback)(data->Buf);
+				}
+				return 0;
+			}, callback);
+		} else {
+			mod = ImGui::InputTextWithHint(label.c_str(), hint.c_str(), &obj, flags, [](ImGuiInputTextCallbackData* data) {
+				auto callback = static_cast<std::function<void (std::string)>*>(data->UserData);
+				if (callback) {
+					(*callback)(data->Buf);
+				}
+				return 0;
+			}, callback);
+		}
 		viz.setMod(mod);
 		return obj;
-	}, 
+	},
 	py::arg("label"),
 	py::arg("value"),
-	py::arg("callback") = nullptr,
-	py::arg("flags") = 0);
+	py::arg("hint") = "",
+	py::arg("flags") = 0,
+	py::arg("callback") = nullptr);
+	m.def("input_multiline", [&](std::string label, std::string& obj, ImVec2 size, ImGuiInputTextFlags flags, std::function<void (std::string)>* callback) {
+		bool mod = ImGui::InputTextMultiline(
+			label.c_str(), &obj, size, flags, [](ImGuiInputTextCallbackData* data) {
+				auto callback = static_cast<std::function<void (std::string)>*>(data->UserData);
+				if (callback) {
+					(*callback)(data->Buf);
+				}
+				return 0;
+			}, callback);
+		viz.setMod(mod);
+		return obj;
+	},
+	py::arg("label"),
+	py::arg("value"),
+	py::arg("size") = ImVec2(0, 0),
+	py::arg("flags") = 0,
+	py::arg("callback") = nullptr);
     m.def("input", [&](std::string label, int64_t& obj, int64_t step, int64_t step_fast, std::string format, ImGuiInputTextFlags flags) {
         bool mod = ImGui::InputScalar(
 			label.c_str(), ImGuiDataType_S64, &obj, &step, &step_fast, format.c_str(), flags);
