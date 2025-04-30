@@ -119,11 +119,10 @@ class CMakeBuild(build_ext):
 
 
 setup(name="imviz",
-      version="0.2.11",
+      version="0.2.12",
       description="Pythonic bindings for imgui/implot",
-      url="https://github.com/joruof/imviz",
-      author="Jona Ruof",
-      author_email="jona.ruof@uni-ulm.de",
+      url="https://github.com/degeneratehyperbola/imviz",
+      author="Jona Ruof, River Hyperbola",
       license="MIT",
       zip_safe=False,
       long_description=Path('README.md').read_text('utf-8'),
