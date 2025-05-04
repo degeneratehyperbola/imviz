@@ -9,7 +9,7 @@ import imviz as viz
 
 @dataclass
 class Demo:
-	vec_2d = [0, 1]
+	vec_2d = [0, 0]
 
 	def __autogui__(self, name, **kwargs):
 		viz.set_main_window_title('Demo')
@@ -33,11 +33,16 @@ class Demo:
 			viz.end_popup()
 		
 		if viz.begin_plot('2D Input', flags=viz.PlotFlags.CANVAS_ONLY):
-			viz.get_plot_popup_point()
+			viz.setup_axes_limits(-1, 1, -1, 1)
+			viz.setup_axes('', '', viz.PlotAxisFlags.LOCK, viz.PlotAxisFlags.LOCK)
+
+			self.vec_2d = viz.drag_point('##p', self.vec_2d)
+			viz.plot_text('Point', self.vec_2d[0], self.vec_2d[1], [30, 10])
 			viz.end_plot()
 
 if __name__ == '__main__':
-	demo = Demo()
+	viz.set_main_window_size([1440, 960])
 
+	demo = Demo()
 	while viz.wait():
 		viz.autogui(demo)
