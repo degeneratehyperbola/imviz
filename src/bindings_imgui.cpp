@@ -526,6 +526,11 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("items"),
     py::arg("selection_index") = 0);
 
+	m.def("calc_text_size", [&](std::string str) {
+		return ImGui::CalcTextSize(str.c_str());
+	},
+    py::arg("str"));
+
     m.def("text", [&](py::handle obj, py::handle color) {
 		
 		ImVec4 c = interpretColor(color);
