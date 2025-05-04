@@ -64,6 +64,7 @@ PYBIND11_MODULE(cppimviz, m) {
     });
 
     m.def("enter_fullscreen", [&]() {
+		viz.windowSizeBeforeFullscreen = viz.getWindowSize();
 
         GLFWmonitor* monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -78,7 +79,8 @@ PYBIND11_MODULE(cppimviz, m) {
 
     m.def("leave_fullscreen", [&]() {
         if (nullptr != viz.window) {
-            glfwSetWindowMonitor(viz.window, nullptr, 0, 0, 800, 600, 0);
+            glfwSetWindowMonitor(
+				viz.window, nullptr, 0, 0, viz.windowSizeBeforeFullscreen.x, viz.windowSizeBeforeFullscreen.y, 0);
         }
     });
 
@@ -87,7 +89,7 @@ PYBIND11_MODULE(cppimviz, m) {
             glfwSetWindowPos(viz.window, pos.x, pos.y);
         }
     },
-    py::arg("size"));
+    py::arg("pos"));
 
     m.def("get_main_window_pos", [&]() {
         int x = 0;
