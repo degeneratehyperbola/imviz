@@ -21,7 +21,6 @@ def configure_ini_path(module):
             "." + main_file_name + ".imviz.ini")
 
     set_ini_path(ini_path)
-    load_ini_from_str(INITIAL_INI)
     load_ini(ini_path)
 
 
