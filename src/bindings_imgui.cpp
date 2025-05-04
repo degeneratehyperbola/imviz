@@ -433,10 +433,12 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     },
     py::arg("label") = "");
 
-    m.def("begin_popup", [&](std::string label) {
+    m.def("begin_popup", [&](std::string label, ImGuiWindowFlags flags) {
 
-        return ImGui::BeginPopup(label.c_str());
-    });
+        return ImGui::BeginPopup(label.c_str(), flags);
+    },
+    py::arg("label"),
+	py::arg("flags") = ImGuiWindowFlags_None);
 
     m.def("begin_popup_modal", [&](std::string label) {
 
