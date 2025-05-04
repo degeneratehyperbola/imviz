@@ -3,8 +3,10 @@
 
 #define EGL_EGLEXT_PROTOTYPES
 #include <GL/glew.h>
+#if defined(__linux__) || defined(__APPLE__)
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+#endif
 
 #include <imgui.h>
 #include <iostream>
@@ -58,6 +60,8 @@ void ImViz::init() {
 
         glfwMakeContextCurrent(window);
     } else {
+		#if defined(__linux__) || defined(__APPLE__)
+		#pragma region Headless
         std::cerr << "Cannot initialize GLFW, using headless mode" << std::endl;
 
         /**
@@ -147,6 +151,11 @@ void ImViz::init() {
         if (0 == eglCtx) {
             throw std::runtime_error("EGL context creation has failed!");
         }
+		#pragma endregion
+		#else
+		throw std::runtime_error("Windows headless mode? Bruh.\n");
+		exit(1);
+		#endif
     }
 
     glewExperimental = true;
