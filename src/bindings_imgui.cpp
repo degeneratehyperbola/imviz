@@ -981,6 +981,8 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 
     #pragma region Layout functions
 
+	m.def("align_text_to_frame_padding", ImGui::AlignTextToFramePadding);
+
     m.def("get_content_region_avail", ImGui::GetContentRegionAvail);
 
     m.def("get_viewport_center", [&]() { 
