@@ -53,11 +53,7 @@ namespace ImPlot {
 }
 
 void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
-
-    /**
-     * Flags and defines
-     */
-
+    #pragma region Flags and defines
     py::enum_<ImGuiCond_>(m, "Cond")
         .value("NONE", ImGuiCond_None)
         .value("ALWAYS", ImGuiCond_Always)
@@ -383,9 +379,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         .value("BUTTON_TEXT_ALIGN", ImGuiStyleVar_ButtonTextAlign)
         .value("SELECTABLE_TEXT_ALIGN", ImGuiStyleVar_SelectableTextAlign);
 
-    /*
-     * Imgui widgets
-     */
+    #pragma endregion
+
+    #pragma region Widgets
 
     m.def("show_imgui_demo", ImGui::ShowDemoWindow);
     m.def("show_implot_demo", ImPlot::ShowDemoWindow);
@@ -918,9 +914,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("size") = ImVec2(0, 0),
 	py::arg("flags") = ImGuiSelectableFlags_None);
 
-    /**
-     * Tables & Columns
-     */
+    #pragma endregion
+
+    #pragma region Tables & Columns
 
     m.def("begin_table", [&](std::string label,
                              int columns,
@@ -964,9 +960,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 	py::arg("cols"),
 	py::arg("rows"));
 
-    /**
-     * Imgui style functions
-     */
+    #pragma endregion
+
+    #pragma region Style functions
 
     m.def("style_colors_dark", [&](){
         ImGui::StyleColorsDark();
@@ -981,9 +977,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         ImPlot::StyleColorsClassic();
     });
 
-    /**
-     * Imgui layout functions
-     */
+    #pragma endregion
+
+    #pragma region Layout functions
 
     m.def("get_content_region_avail", ImGui::GetContentRegionAvail);
 
@@ -1031,9 +1027,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     m.def("dock_builder_remove_node_child_nodes", ImGui::DockBuilderRemoveNodeChildNodes);
     m.def("dock_builder_finish", ImGui::DockBuilderFinish);
 
-    /**
-     * Imgui config helper functions
-     */
+    #pragma endregion
+
+    #pragma region Config helper functions
 
     m.def("set_viewports_enable", [&](bool value) {
 
@@ -1083,9 +1079,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         return std::string(chars, outSize);
     });
 
-    /**
-     * Imgui window helper functions
-     */
+    #pragma endregion
+
+    #pragma region Window helper functions
 
     m.def("set_next_window_pos", ImGui::SetNextWindowPos,
     py::arg("position"),
@@ -1160,9 +1156,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         return io.WantCaptureKeyboard;
     });
 
-    /**
-     * Font functions
-     */
+    #pragma endregion
+
+    #pragma region Font functions
 
     m.def("get_global_font_size", [&]() {
         return viz.smallFont->FontSize;
@@ -1172,9 +1168,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         return viz.fontBaseSize = baseSize;
     });
 
-    /**
-     * Imgui item helper functions
-     */
+    #pragma endregion
+
+    #pragma region Item helper functions
 
     m.def("set_next_item_width", 
             ImGui::SetNextItemWidth,
@@ -1232,9 +1228,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 
     m.def("end_disabled", &ImGui::EndDisabled);
 
-    /**
-     * Imgui ID management functions
-     */
+    #pragma endregion
+
+    #pragma region ID management functions
 
     m.def("push_id", [&](std::string id) {
         ImGui::PushID(id.c_str());
@@ -1260,9 +1256,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 
     m.def("get_item_id", ImGui::GetItemID);
 
-    /**
-     * Styling
-     */
+    #pragma endregion
+
+    #pragma region Styling
 
     m.def("push_style_color", [](ImGuiCol idx, py::handle& col){
         ImVec4 color = interpretColor(col); 
@@ -1287,9 +1283,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     }, 
     py::arg("count") = 1);
 
-    /**
-     * Drag'n'drop
-     */
+    #pragma endregion
+
+    #pragma region Drag n drop
 
     m.def("begin_drag_drop_source", ImGui::BeginDragDropSource,
         py::arg("flags") = ImGuiDragDropFlags_None);
@@ -1328,9 +1324,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("id"),
     py::arg("flags") = ImGuiDragDropFlags_None);
 
-    /**
-     * DrawLists
-     */
+    #pragma endregion
+
+    #pragma region DrawLists
 
     struct VizMatrix
     {
@@ -1405,9 +1401,9 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         }
     };
 
-    /**
-     * Wrapper class around VizDrawList for extra functionality.
-     */
+    #pragma endregion
+
+    #pragma region VizDrawList wrapper for extra functionality
 
     struct VizDrawList {
 
@@ -1924,6 +1920,8 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
             applyTransform(startIndex);
         }
     };
+
+    #pragma endregion
 
     m.def("disable_aa", [&]() {
         ImGui::GetCurrentWindow()->DrawList->Flags = ImDrawListFlags_None;

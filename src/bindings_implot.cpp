@@ -17,9 +17,7 @@
 
 void loadImplotPythonBindings(pybind11::module& m, ImViz& viz) {
 
-    /**
-     * Flags and defines
-     */
+    #pragma region Flags and defines
 
     py::enum_<ImAxis_>(m, "Axis", py::arithmetic())
         .value("X1", ImAxis_X1)
@@ -225,9 +223,9 @@ void loadImplotPythonBindings(pybind11::module& m, ImViz& viz) {
         .value("RICE", ImPlotBin_Rice)
         .value("SCOTT", ImPlotBin_Scott);
 
-    /*
-     * ImPlot functions
-     */
+    #pragma endregion
+
+    #pragma region ImPlot functions
 
     m.def("begin_figure", [&](std::string label,
                             ImVec2 size,
@@ -1053,4 +1051,7 @@ void loadImplotPythonBindings(pybind11::module& m, ImViz& viz) {
         return plot->Axes[axis].Hovered;
     },
     py::arg("axis"));
+
+    #pragma endregion
+
 }
