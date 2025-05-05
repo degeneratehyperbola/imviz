@@ -495,6 +495,10 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 
     m.def("tree_pop", ImGui::TreePop);
 
+	m.def("push_button_repeat", ImGui::PushButtonRepeat,
+	py::arg("repeat") = true);
+	m.def("pop_button_repeat", ImGui::PopButtonRepeat);
+
 	m.def("button", ImGui::Button,
     py::arg("label"),
     py::arg("size") = ImVec2(0, 0));
