@@ -1327,7 +1327,10 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 			ImGui::SaveStylesTo(filePath.c_str());
 		ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
 		if (ImGui::Button("Load") && !filePath.empty())
+		{
 			ImGui::LoadStyleFrom(filePath.c_str());
+			ImPlot::StyleColorsAuto();
+		}
 
 		ImGui::Separator();
 
@@ -1515,6 +1518,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 	});
 	m.def("load_style_ini", [&](std::string filePath) {
 		ImGui::LoadStyleFrom(filePath.c_str());
+		ImPlot::StyleColorsAuto();
 	},
 	py::arg("file_path"));
 
