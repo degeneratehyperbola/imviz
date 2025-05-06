@@ -4,8 +4,6 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include <sstream>
-#include <iomanip>
 #include <string>
 #include <functional>
 
