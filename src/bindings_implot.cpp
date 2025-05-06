@@ -1020,28 +1020,30 @@ void loadImplotPythonBindings(pybind11::module& m, ImViz& viz) {
 
     m.def("end_legend_popup", &ImPlot::EndLegendPopup);
 
+	#pragma region Styling
+
     m.def("push_plot_style_var", [](ImPlotStyleVar idx, float val){
-        ImPlot::PushStyleVar(idx, val);
+		ImPlot::PushStyleVar(idx, val);
     },
     py::arg("idx"),
     py::arg("val"));
-
     m.def("push_plot_style_var", [](ImPlotStyleVar idx, int val){
-        ImPlot::PushStyleVar(idx, val);
+		ImPlot::PushStyleVar(idx, val);
     },
     py::arg("idx"),
     py::arg("val"));
-
     m.def("push_plot_style_var", [](ImPlotStyleVar idx, ImVec2 val){
-        ImPlot::PushStyleVar(idx, val);
+		ImPlot::PushStyleVar(idx, val);
     },
     py::arg("idx"),
     py::arg("val"));
-
+	
     m.def("pop_plot_style_var", [](int count) {
-        ImPlot::PopStyleVar(count);
+		ImPlot::PopStyleVar(count);
     },
     py::arg("count") = 1);
+	
+	#pragma endregion
 
     m.def("is_axis_hovered", [](ImAxis axis) {
         ImPlotPlot* plot = ImPlot::GetCurrentPlot();
