@@ -1171,6 +1171,11 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
             ImGui::SetNextItemWidth,
     py::arg("width"));
 
+	m.def("push_item_width", ImGui::PushItemWidth,
+	py::arg("width"));
+
+	m.def("pop_item_width", ImGui::PopItemWidth);
+
     m.def("set_next_item_open", 
             ImGui::SetNextItemOpen,
     py::arg("open"),
