@@ -130,6 +130,7 @@ set(SOURCE_FILES
 	./src/source_sans_pro.cpp
 	./src/fa_solid_900.cpp
 	./src/implot_ext.cpp
+	./src/imgui_styles.cpp
    )
 
 set(HEADER_FILES 
