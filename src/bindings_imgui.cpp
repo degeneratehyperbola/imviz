@@ -535,9 +535,11 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         std::string str = py::str(obj);
 		
         if (c.w >= 0) {
-			ImGui::TextColored(c, "%s", str.c_str());
+			ImGui::PushStyleColor(ImGuiCol_Text, c);
+			ImGui::TextUnformatted(str.c_str());
+			ImGui::PopStyleColor();
         } else {
-			ImGui::Text("%s", str.c_str());
+			ImGui::TextUnformatted(str.c_str());
         }
     },
     py::arg("str"),
