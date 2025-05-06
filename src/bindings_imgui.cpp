@@ -963,23 +963,6 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 
     #pragma endregion
 
-    #pragma region Style functions
-
-    m.def("style_colors_dark", [&](){
-        ImGui::StyleColorsDark();
-        ImPlot::StyleColorsDark();
-    });
-    m.def("style_colors_light", [&](){
-        ImGui::StyleColorsLight();
-        ImPlot::StyleColorsLight();
-    });
-	m.def("style_colors_classic", [&](){
-        ImGui::StyleColorsClassic();
-        ImPlot::StyleColorsClassic();
-    });
-
-    #pragma endregion
-
     #pragma region Layout functions
 
     m.def("set_scroll_here_x", ImGui::SetScrollHereX,
@@ -1289,11 +1272,29 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     },
     py::arg("idx"),
     py::arg("val"));
+	m.def("push_style_var", [](ImGuiStyleVar idx, float val){
+        ImGui::PushStyleVar(idx, val);
+    },
+    py::arg("idx"),
+    py::arg("val"));
 
     m.def("pop_style_var", [](int count) {
         ImGui::PopStyleVar(count);
     }, 
     py::arg("count") = 1);
+
+	m.def("style_colors_dark", [&](){
+        ImGui::StyleColorsDark();
+        ImPlot::StyleColorsDark();
+    });
+    m.def("style_colors_light", [&](){
+        ImGui::StyleColorsLight();
+        ImPlot::StyleColorsLight();
+    });
+	m.def("style_colors_classic", [&](){
+        ImGui::StyleColorsClassic();
+        ImPlot::StyleColorsClassic();
+    });
 
     #pragma endregion
 
