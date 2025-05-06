@@ -419,9 +419,6 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 
     m.def("end_child", ImGui::EndChild);
 
-    m.def("set_scroll_here_x", ImGui::SetScrollHereX);
-    m.def("set_scroll_here_y", ImGui::SetScrollHereY);
-
     m.def("begin_popup_context_item", [&](std::string label) {
 
         return ImGui::BeginPopupContextItem(
@@ -984,6 +981,15 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     #pragma endregion
 
     #pragma region Layout functions
+
+    m.def("set_scroll_here_x", ImGui::SetScrollHereX,
+	py::arg("align") = 0.0f);
+    m.def("set_scroll_here_y", ImGui::SetScrollHereY,
+	py::arg("align") = 0.0f);
+	m.def("get_scroll_x", ImGui::GetScrollX);
+	m.def("get_scroll_y", ImGui::GetScrollY);
+	m.def("get_scroll_max_x", ImGui::GetScrollMaxX);
+	m.def("get_scroll_max_y", ImGui::GetScrollMaxY);
 
 	m.def("align_text_to_frame_padding", ImGui::AlignTextToFramePadding);
 
