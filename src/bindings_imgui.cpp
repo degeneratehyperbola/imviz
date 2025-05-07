@@ -1409,8 +1409,6 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 					"Left-click on color square to open color picker,\n"
 					"Right-click to open edit options menu.");
 
-				ImGui::SetNextWindowSizeConstraints(ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 10), ImVec2(FLT_MAX, FLT_MAX));
-				ImGui::BeginChild("##colors", ImVec2(0, 0), ImGuiChildFlags_Border, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar | ImGuiWindowFlags_NavFlattened);
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
 				for (int i = 0; i < ImGuiCol_COUNT; i++)
 				{
@@ -1432,7 +1430,6 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 					ImGui::PopID();
 				}
 				ImGui::PopItemWidth();
-				ImGui::EndChild();
 
 				ImGui::EndTabItem();
 			}
