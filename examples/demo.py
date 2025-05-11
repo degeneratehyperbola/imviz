@@ -22,6 +22,10 @@ class Demo:
 		if viz.button('Leave Fullscreen'):
 			viz.leave_fullscreen()
 		
+		if viz.begin_window('Style Editor'):
+			viz.style_editor()
+		viz.end_window()
+
 		viz.text('Press [CTRL+K]!')
 		for e in viz.get_key_events():
 			if e.key == viz.KEY_K:
