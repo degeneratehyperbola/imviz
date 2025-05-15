@@ -1,5 +1,9 @@
 #include "imviz.hpp"
+#include <GLFW/glfw3.h>
+#include <charconv>
+#include <cstdio>
 #include <stdexcept>
+#include <string>
 
 #define EGL_EGLEXT_PROTOTYPES
 #include <GL/glew.h>
@@ -54,7 +58,9 @@ void ImViz::init() {
                 nullptr);
 
         if (!window) {
-            throw std::runtime_error("GLFW window creation failed!\n");
+			const char** description = nullptr;
+			glfwGetError(description);
+            throw std::runtime_error(std::string("GLFW window creation failed! ") + *description);
             exit(1);
         }
 
