@@ -203,7 +203,7 @@ ImVec2 ImViz::getWindowSize() {
     return ImVec2(w, h);
 }
 
-void ImViz::reloadFonts () {
+void ImViz::reloadFonts() {
 
     ImGuiIO& io = ImGui::GetIO();
 

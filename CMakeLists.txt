@@ -1,15 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
+cmake_policy(VERSION 3.5)
 project(cppimviz)
 
-# Exports compile commands to .json file for vim YouCompleteMe support.
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# Sometimes helps to find the right python version.
+# Sometimes helps to find the right python version
 set(PYBIND11_FINDPYTHON ON)
 
 set(PY_TARGET_NAME "${PROJECT_NAME}")
 
-# ---[ Check for OpenGL (mandatory) ]---
+# OpenGL
 
 set(OpenGL_GL_PREFERENCE GLVND)
 
@@ -21,7 +19,7 @@ else(OPENGL_FOUND)
 	message(FATAL_ERROR "${ColourBoldRed}OpenGL missing.${ColourReset}")
 endif()
 
-# ---[ External libs ]---
+# Others
 
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY true)
 
@@ -107,7 +105,7 @@ else()
 
 endif()
 
-# Collect files.
+# Collect files and set compile options
 
 set(SOURCE_FILES
 	${imgui_SOURCE_DIR}/imgui.cpp
@@ -143,8 +141,6 @@ set(HEADER_FILES
 	./src/source_sans_pro.hpp
 	./src/fa_solid_900.hpp
 	)
-
-# Builds the python bindings module.
 
 pybind11_add_module(${PY_TARGET_NAME} MODULE ${SOURCE_FILES})
 
@@ -204,3 +200,9 @@ else()
 							glfw)
 
 endif()
+
+install(TARGETS ${PY_TARGET_NAME}
+		COMPONENT python_modules
+		DESTINATION .
+		LIBRARY DESTINATION .
+)

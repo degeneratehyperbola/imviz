@@ -1,7 +1,14 @@
+[project]
+name = "imviz"
+requires-python = ">=3.8"
+readme = "README.md"
+license = { "file" = "LICENSE" }
+version = "3.1+buildsystem"
+
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel",
-    "cmake"
-]
-build-backend = "setuptools.build_meta"
+requires = ["py-build-cmake~=0.4.3"]
+build-backend = "py_build_cmake.build"
+
+[tool.py-build-cmake.cmake]
+config = "Release"
+install_components = ["python_modules"]
