@@ -262,6 +262,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
         .value("NO_SORT_DESCENDING", ImGuiTableColumnFlags_NoSortDescending)
         .value("NO_HEADER_LABEL", ImGuiTableColumnFlags_NoHeaderLabel)
         .value("NO_HEADER_WIDTH", ImGuiTableColumnFlags_NoHeaderWidth)
+        .value("ANGLED_HEADER", ImGuiTableColumnFlags_AngledHeader)
         .value("PREFER_SORT_ASCENDING", ImGuiTableColumnFlags_PreferSortAscending)
         .value("PREFER_SORT_DESCENDING", ImGuiTableColumnFlags_PreferSortDescending)
         .value("INDENT_ENABLE", ImGuiTableColumnFlags_IndentEnable)
@@ -957,6 +958,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     );
 
     m.def("table_headers_row", &ImGui::TableHeadersRow);
+    m.def("table_angled_headers_row", &ImGui::TableAngledHeadersRow);
 
     m.def("table_setup_scroll_freeze", &ImGui::TableSetupScrollFreeze,
 	py::arg("cols"),
