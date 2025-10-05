@@ -4,6 +4,9 @@ requires-python = ">=3.8"
 readme = "README.md"
 license = { "file" = "LICENSE" }
 version = "3.1+buildsystem"
+dependencies = [
+    "numpy"
+]
 
 [build-system]
 requires = ["py-build-cmake~=0.4.3"]
@@ -12,3 +15,6 @@ build-backend = "py_build_cmake.build"
 [tool.py-build-cmake.cmake]
 config = "Release"
 install_components = ["python_modules"]
+
+[tool.py-build-cmake.windows.cmake]
+generator = "Visual Studio 17 2022"
