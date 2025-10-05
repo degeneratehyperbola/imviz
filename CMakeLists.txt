@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.5)
-cmake_policy(VERSION 3.5)
+cmake_minimum_required(VERSION 3.15...4.1.1)
+cmake_policy(VERSION 3.15...4.1.1)
 project(cppimviz)
 
 # Sometimes helps to find the right python version
@@ -49,7 +49,7 @@ FetchContent_MakeAvailable(implot)
 FetchContent_Declare(
 	pybind
 	GIT_REPOSITORY "https://github.com/pybind/pybind11"
-	GIT_TAG "v2.11.1"
+	GIT_TAG "v3.0.1"
 )
 
 message(STATUS "Loading pybind ...")
@@ -60,7 +60,6 @@ if(WIN32 OR APPLE)
 	FetchContent_Declare(
 		glew
 		GIT_REPOSITORY "https://github.com/Perlmint/glew-cmake"
-		GIT_TAG "glew-cmake-2.2.0"
 	)
 
 	message(STATUS "Loading glew ...")
@@ -145,8 +144,8 @@ set(HEADER_FILES
 pybind11_add_module(${PY_TARGET_NAME} MODULE ${SOURCE_FILES})
 
 target_include_directories(${PY_TARGET_NAME} SYSTEM PUBLIC
-						   ${imgui_SOURCE_DIR}
-						   ${implot_SOURCE_DIR})
+							${imgui_SOURCE_DIR}
+							${implot_SOURCE_DIR})
 
 target_include_directories(${PY_TARGET_NAME} PUBLIC src/)
 
@@ -156,7 +155,7 @@ if(WIN32)
 							-DIMGUI_USER_CONFIG="im_user_config.h"
 							-Zi   # -g
 							-O2   # msvc has no -O3
-							-std:c++17)  # note colon!
+							-std:c++17)  # Note colon!
 	
 	target_link_libraries(${PY_TARGET_NAME} PUBLIC
 							${OPENGL_LIBRARIES}
