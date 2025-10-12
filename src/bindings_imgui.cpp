@@ -679,6 +679,33 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     py::arg("label"),
     py::arg("value"));
 
+	m.def("vslider", [&](std::string label, int64_t& value, ImVec2 size, int64_t min, int64_t max, std::string format, ImGuiSliderFlags flags) {
+        bool mod = ImGui::VSliderScalar(
+                label.c_str(), size, ImGuiDataType_S64, &value, &min, &max, format.c_str(), flags);
+        viz.setMod(mod);
+        return value;
+    }, 
+    py::arg("label"),
+    py::arg("value"),
+	py::arg("size"),
+    py::arg("min") = 0,
+    py::arg("max") = 100,
+    py::arg("format") = "%i",
+    py::arg("flags") = ImGuiSliderFlags_None);
+	m.def("vslider", [&](std::string label, double& value, ImVec2 size, double min, double max, std::string format, ImGuiSliderFlags flags) {
+        bool mod = ImGui::VSliderScalar(
+                label.c_str(), size, ImGuiDataType_Double, &value, &min, &max, format.c_str(), flags);
+        viz.setMod(mod);
+        return value;
+    }, 
+    py::arg("label"),
+    py::arg("value"),
+	py::arg("size"),
+    py::arg("min") = 0.0,
+    py::arg("max") = 1.0,
+    py::arg("format") = "%.1f",
+    py::arg("flags") = ImGuiSliderFlags_None);
+
 	m.def("slider", [&](std::string label, int64_t& value, int64_t min, int64_t max, std::string format, ImGuiSliderFlags flags) {
         bool mod = ImGui::SliderScalar(
                 label.c_str(), ImGuiDataType_S64, &value, &min, &max, format.c_str(), flags);
