@@ -1194,9 +1194,7 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 	m.def("get_window_font_scale", []() {
 		return ImGui::GetCurrentWindow()->FontWindowScale;
 	});
-	m.def("set_window_font_scale", [](float scale) {
-		ImGui::SetWindowFontScale(scale);
-	}, py::arg("scale") = 1.0f);
+	m.def("set_window_font_scale", ImGui::SetWindowFontScale, py::arg("scale") = 1.0f);
 
     #pragma endregion
 
