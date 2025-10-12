@@ -728,7 +728,6 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 	py::arg("max") = 1.0,
 	py::arg("format") = "%.1f",
 	py::arg("flags") = ImGuiSliderFlags_None);
-	
 
     m.def("drag", [&](std::string label, int64_t& value, float speed, int64_t min, int64_t max, std::string format, ImGuiSliderFlags flags) {
 
@@ -1161,10 +1160,16 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
     m.def("get_global_font_size", [&]() {
         return viz.smallFont->FontSize;
     });
-
     m.def("set_global_font_size", [&](double baseSize) {
         return viz.fontBaseSize = baseSize;
     });
+
+	m.def("get_window_font_scale", []() {
+		return ImGui::GetCurrentWindow()->FontWindowScale;
+	});
+	m.def("set_window_font_scale", [](float scale) {
+		ImGui::SetWindowFontScale(scale);
+	}, py::arg("scale") = 1.0f);
 
     #pragma endregion
 
@@ -1263,13 +1268,16 @@ void loadImguiPythonBindings(pybind11::module& m, ImViz& viz) {
 
     #pragma region Styling
 
+	m.def("scale_all_sizes", [](float scale) {
+		ImGui::GetStyle().ScaleAllSizes(scale);
+	}, py::arg("scale"));
+
     m.def("push_style_color", [](ImGuiCol idx, py::handle& col){
         ImVec4 color = interpretColor(col);
         ImGui::PushStyleColor(idx, color);
     },
     py::arg("idx"),
     py::arg("col"));
-
     m.def("pop_style_color", [](int count) {
         ImGui::PopStyleColor(count);
     }, 
